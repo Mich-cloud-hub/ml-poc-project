@@ -1,30 +1,31 @@
-"""Student-owned dataset loading contract.
-
-Students must implement ``load_dataset_split`` so that ``scripts/main.py`` can
-evaluate every configured model on the same test split.
-"""
-
 from __future__ import annotations
-
+import pandas as pd
 from typing import Any
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 def load_dataset_split() -> tuple[Any, Any, Any, Any]:
-    """Return the dataset split used for model evaluation.
+    df = pd.read_csv('high_diamond_ranked_10min.csv')
+    
+    df = df.drop(columns=['gameId'])
+    
+    redundant_red_stats = [col for col in df.columns if 'red' in col and ('Diff' in col or 'Experience' in col or 'Gold' in col)]
+    df = df.drop(columns=redundant_red_stats)
 
-    Expected return value:
-        A tuple ``(X_train, X_test, y_train, y_test)``.
+    X = df.drop(columns=['blueWins'])
+    y = df['blueWins']
 
-    Constraints:
-    - ``X_train`` and ``X_test`` must contain feature data in a format accepted
-      by the trained models stored in ``config.MODELS``.
-    - ``y_train`` and ``y_test`` must contain the corresponding targets.
-    - ``y_test`` must align with the predictions produced by each loaded model.
-
-    Typical choices for the return types are ``pandas.DataFrame`` /
-    ``pandas.Series`` or ``numpy.ndarray``.
-    """
-
-    raise NotImplementedError(
-        "Implement data.load_dataset_split() before running scripts/main.py."
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, 
+        y, 
+        test_size=0.2, 
+        random_state=42, 
+        stratify=y
     )
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    return X_train_scaled, X_test_scaled, y_train, y_test
+    
