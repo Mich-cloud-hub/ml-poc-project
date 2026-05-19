@@ -16,3 +16,4 @@ seaborn
 statsmodels
 streamlit
 xgboost
+shap

@@ -1,28 +1,29 @@
-"""Student-owned metrics contract.
-
-Students must implement ``compute_metrics`` to return the evaluation metrics
-that matter for their project.
-"""
-
-from __future__ import annotations
-
 from typing import Any
-
+from sklearn.metrics import (
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score,
+    confusion_matrix,
+)
 
 def compute_metrics(y_true: Any, y_pred: Any) -> dict[str, float]:
-    """Return the metrics used to compare model performance.
+    precision = float(precision_score(y_true, y_pred))
+    recall = float(recall_score(y_true, y_pred))
+    f1 = float(f1_score(y_true, y_pred))
+    roc_auc = float(roc_auc_score(y_true, y_pred))
 
-    Expected return value:
-        A dictionary mapping metric names to numeric values, for example:
-        ``{"accuracy": 0.91, "f1": 0.88}``.
+    true_negative, false_positive, false_negative, true_positive = confusion_matrix(
+        y_true, y_pred
+    ).ravel()
 
-    Constraints:
-    - Every value must be numeric and convertible to ``float``.
-    - Use the same metric set for every model so results remain comparable.
-    - Keep metric names stable because they are written to
-      ``results/model_metrics.csv``.
-    """
-
-    raise NotImplementedError(
-        "Implement metrics.compute_metrics() before running scripts/main.py."
-    )
+    return {
+        "precision": precision,
+        "recall": recall,
+        "f1_score": f1,
+        "roc_auc": roc_auc,
+        "cm_true_negative": float(true_negative),
+        "cm_false_positive": float(false_positive),
+        "cm_false_negative": float(false_negative),
+        "cm_true_positive": float(true_positive),
+    }

@@ -1,41 +1,30 @@
+import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent
-SRC_DIR = PROJECT_ROOT / "src"
-DATA_DIR = PROJECT_ROOT / "data"
-LOGS_DIR = PROJECT_ROOT / "logs"
-MODELS_DIR = PROJECT_ROOT / "models"
-NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
-PLOTS_DIR = PROJECT_ROOT / "plots"
-RESULTS_DIR = PROJECT_ROOT / "results"
-SCRIPTS_DIR = PROJECT_ROOT / "scripts"
-TESTS_DIR = PROJECT_ROOT / "tests"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+MODELS_DIR = BASE_DIR / "models"
+RESULTS_DIR = BASE_DIR / "results"
+PLOTS_DIR = BASE_DIR / "plots"
 
-for dir in [
-    DATA_DIR,
-    LOGS_DIR,
-    MODELS_DIR,
-    NOTEBOOKS_DIR,
-    PLOTS_DIR,
-    RESULTS_DIR,
-    SCRIPTS_DIR,
-    TESTS_DIR,
-]:
-    dir.mkdir(exist_ok=True)
+for directory in [MODELS_DIR, RESULTS_DIR, PLOTS_DIR]:
+    directory.mkdir(parents=True, exist_ok=True)
 
-ENV_FILE = PROJECT_ROOT / ".env"
-APP_ENTRYPOINT = PROJECT_ROOT / "src" / "app.py"
-MODEL_METRICS_FILE = RESULTS_DIR / "model_metrics.csv"
+DROP_COLS = [
+    "gameId", "redFirstBlood", "redKills", "redDeaths", 
+    "redGoldDiff", "redExperienceDiff", "redTotalGold", 
+    "redTotalExperience", "redGoldPerMin", "redCSPerMin"
+]
 
-STREAMLIT_HOST = "localhost"
-STREAMLIT_PORT = 8501
-
-# Students must replace this example with their trained models.
-# Each entry must point to a serialized model saved as `.joblib`, `.pkl`, or `.pickle`.
 MODELS = {
-    "model_a": {
-        "name": "Model A",
-        "description": "A simple baseline model.",
-        "path": MODELS_DIR / "model_a.pkl",
+    "logistic_regression": {
+        "name": "Logistic Regression Baseline",
+        "description": "Standardized features passed into a logistic regression model.",
+        "path": MODELS_DIR / "log_reg.pkl",
     },
+    "xgboost": {
+        "name": "XGBoost Classifier",
+        "description": "Tree ensemble optimized via RandomizedSearchCV.",
+        "path": MODELS_DIR / "xgboost.pkl",
+    }
 }
